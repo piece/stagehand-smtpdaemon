@@ -81,7 +81,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      */
     public function onConnect($clientId = 0)
     {
-        $this->_server->sendData($clientId, "220\r\n");
+        $this->reply($clientId, 220);
     }
 
     // }}}
@@ -91,9 +91,9 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     * @param integer $clientId
     * @param string  $data
      */
-    public function onReceiveData( $clientId = 0, $data = "" )
+    public function onReceiveData($clientId = 0, $data = "")
     {
-        $this->_server->sendData($clientId, "250\r\n");
+        $this->reply($clientId, 250);
     }
 
     /**#@-*/
@@ -101,6 +101,25 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     /**#@+
      * @access protected
      */
+
+    // }}}
+    // {{{ reply()
+
+    /**
+    * @param integer $clientId
+    * @param integer $code
+    * @param string  $data
+     */
+    protected function reply($clientId, $code, $data = null)
+    {
+        if ($data) {
+            $result = sprintf("%d %s\r\n", $code, $data);
+        } else {
+            $result = sprintf("%d\r\n", $code);
+        }
+
+        $this->_server->sendData($clientId, $result);
+    }
 
     /**#@-*/
 
