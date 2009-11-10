@@ -35,10 +35,10 @@
  * @since      File available since Release 0.1.0
  */
 
-// {{{ Stagehand_PHP_SmtpDaemonTest
+// {{{ Stagehand_PHP_SmtpDaemon_HandlerTest
 
 /**
- * Some tests for Stagehand_SmtpDaemon
+ * Some tests for Stagehand_SmtpDaemon_Handler
  *
  * @package    Stagehand_SmtpDaemon
  * @copyright  2009 mbarracuda <mbarracuda@gmail.com>
@@ -46,7 +46,7 @@
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
+class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
 {
 
     // {{{ properties
@@ -61,9 +61,6 @@ class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
      * @access protected
      */
 
-    protected $socket;
-    protected $connection;
-
     /**#@-*/
 
     /**#@+
@@ -76,38 +73,27 @@ class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
      * @access public
      */
 
-    public function setUp()
+    /**
+     * @test
+     */
+    public function connectDaemon()
     {
-        $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-
-        socket_set_option($this->socket, SOL_SOCKET, SO_RCVTIMEO,
-                          array('sec' => 1, 'usec' => 0)
-                          );
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->assertEquals($this->getReply(), "220\r\n");
     }
 
-    public function tearDown()
+    /**
+     * @test
+     */
+    public function commandHelo()
     {
-        socket_close($this->socket);
-    }
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
 
-    public function connect()
-    {
-        $this->connection = @socket_connect($this->socket, 'localhost', 9025);
-    }
-
-    public function send($data)
-    {
-        return @socket_write($this->socket, $data, strlen($data));
-    }
-
-    public function getReply()
-    {
-        $result = null;
-        if (!@socket_recv($this->socket, $result, 2048, 0)) {
-            $this->fail('timeout');
-        }
-
-        return $result;
+        $this->send("HELO localhost\r\n");
+        $this->assertEquals($this->getReply(), "250\r\n");
     }
 
     /**#@-*/

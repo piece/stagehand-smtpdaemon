@@ -43,6 +43,7 @@ set_include_path(realpath(dirname(__FILE__) . '/../src') . PATH_SEPARATOR .
 
 require_once 'PHPUnit/Framework.php';
 require_once 'Stagehand/Autoload.php';
+require_once dirname(__FILE__) . '/Stagehand/SmtpDaemonTest.php';
 
 $loader = Stagehand_Autoload::legacyLoader();
 $loader->addNamespace('Stagehand');
