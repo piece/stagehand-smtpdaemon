@@ -99,6 +99,54 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
         $this->assertEquals($this->getReply(), "250\r\n");
     }
 
+    /**
+     * @test
+     */
+    public function commandMail()
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function commandRcpt()
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function commandData()
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function commandRset()
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function commandNoop()
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function commandQuit()
+    {
+        $this->markTestIncomplete();
+    }
+
     /**#@-*/
 
     /**#@+
