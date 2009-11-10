@@ -92,6 +92,9 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
         $this->assertTrue($this->connection);
         $this->getReply();
 
+        $this->send("HELO\r\n");
+        $this->assertEquals($this->getReply(), "501\r\n");
+
         $this->send("HELO localhost\r\n");
         $this->assertEquals($this->getReply(), "250\r\n");
     }

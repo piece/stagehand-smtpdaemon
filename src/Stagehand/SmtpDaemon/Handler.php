@@ -93,7 +93,23 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      */
     public function onReceiveData($clientId = 0, $data = "")
     {
-        $this->reply($clientId, 250);
+        $data = trim($data);
+        $command = null;
+        $argument = null;
+
+        if (preg_match('/^[a-zA-Z]+$/', $data)) {
+            $command = $data;
+        } else {
+            preg_match('/^([a-zA-Z]+)[ ]+(.*)$/', $data, $matches);
+            $command  = $matches[1];
+            $argument = $matches[2];
+        }
+
+        if ($argument) {
+            $this->reply($clientId, 250);
+        } else {
+            $this->reply($clientId, 501);
+        }
     }
 
     /**#@-*/
