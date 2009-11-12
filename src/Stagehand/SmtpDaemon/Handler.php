@@ -61,6 +61,8 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      * @access protected
      */
 
+    protected $sender;
+
     /**#@-*/
 
     /**#@+
@@ -72,6 +74,17 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     /**#@+
      * @access public
      */
+
+    // }}}
+    // {{{ getSender()
+
+    /**
+     * @return string
+     */
+    public function getSender()
+    {
+        return $this->sender;
+    }
 
     // }}}
     // {{{ onConnect()
@@ -110,6 +123,9 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         case 'helo':
             $this->onHelo($clientId, $argument);
             break;
+        case 'mail':
+            $this->onMail($clientId, $argument);
+            break;
         case 'noop':
             $this->onNoop($clientId);
             break;
@@ -136,9 +152,43 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     {
         if (!$data) {
             $this->reply($clientId, 501, 'Syntax: HELO hostname');
+            return;
         }
 
         $this->reply($clientId, 250, $this->_server->domain);
+    }
+
+    // }}}
+    // {{{ onMail()
+
+    /**
+    * @param integer $clientId
+    * @param string  $data
+     */
+    protected function onMail($clientId, $data = null)
+    {
+        if ($this->sender) {
+            $this->reply($clientId, 503, 'nested MAIL command');
+            return;
+        }
+
+        if (!preg_match('/^from:[ ]*(.+)$/i', $data, $matches)) {
+            $this->reply($clientId, 501, 'Syntax: MAIL FROM:<address>');
+            return;
+        }
+
+        $address = $matches[1];
+        if (preg_match('/^<(.*)>$/', $address, $matches)) {
+            $address = $matches[1];
+        }
+
+        if (!$address) {
+            $this->reply($clientId, 501, 'Syntax: MAIL FROM:<address>');
+            return;
+        }
+
+        $this->sender = $address;
+        $this->reply($clientId, 250, 'Ok');
     }
 
     // }}}

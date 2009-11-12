@@ -105,6 +105,27 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
      */
     public function commandMail()
     {
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
+
+        $this->send("MAIL\r\n");
+        $this->assertEquals($this->getReply(), "501 Syntax: MAIL FROM:<address>\r\n");
+
+        $this->send("MAIL foo\r\n");
+        $this->assertEquals($this->getReply(), "501 Syntax: MAIL FROM:<address>\r\n");
+
+        $this->send("MAIL from:\r\n");
+        $this->assertEquals($this->getReply(), "501 Syntax: MAIL FROM:<address>\r\n");
+
+        $this->send("MAIL from:<>\r\n");
+        $this->assertEquals($this->getReply(), "501 Syntax: MAIL FROM:<address>\r\n");
+
+        $this->send("MAIL from:<foo@example.com>\r\n");
+        $this->assertEquals($this->getReply(), "250 Ok\r\n");
+
+        $this->send("MAIL from:<foo@example.com>\r\n");
+        $this->assertEquals($this->getReply(), "503 nested MAIL command\r\n");
     }
 
     /**
