@@ -87,7 +87,7 @@ class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        socket_close($this->socket);
+        @socket_close($this->socket);
     }
 
     public function connect()
