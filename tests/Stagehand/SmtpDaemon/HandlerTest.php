@@ -136,7 +136,12 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
      */
     public function commandNoop()
     {
-        $this->markTestIncomplete();
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
+
+        $this->send("NOOP\r\n");
+        $this->assertEquals($this->getReply(), "250 Ok\r\n");
     }
 
     /**

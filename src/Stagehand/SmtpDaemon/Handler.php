@@ -110,6 +110,9 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         case 'helo':
             $this->onHelo($clientId, $argument);
             break;
+        case 'noop':
+            $this->onNoop($clientId);
+            break;
         case 'quit':
             $this->onQuit($clientId);
             break;
@@ -136,6 +139,17 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         }
 
         $this->reply($clientId, 250, $this->_server->domain);
+    }
+
+    // }}}
+    // {{{ onNoop()
+
+    /**
+    * @param integer $clientId
+     */
+    protected function onNoop($clientId)
+    {
+        $this->reply($clientId, 250, 'Ok');
     }
 
     // }}}
