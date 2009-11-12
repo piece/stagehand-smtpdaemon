@@ -79,8 +79,9 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
     public function connectDaemon()
     {
         $this->connect();
+
         $this->assertTrue($this->connection);
-        $this->assertEquals($this->getReply(), "220\r\n");
+        $this->assertEquals($this->getReply(), "220 localhost\r\n");
     }
 
     /**
@@ -93,10 +94,10 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
         $this->getReply();
 
         $this->send("HELO\r\n");
-        $this->assertEquals($this->getReply(), "501\r\n");
+        $this->assertEquals($this->getReply(), "501 Syntax: HELO hostname\r\n");
 
         $this->send("HELO localhost\r\n");
-        $this->assertEquals($this->getReply(), "250\r\n");
+        $this->assertEquals($this->getReply(), "250 localhost\r\n");
     }
 
     /**

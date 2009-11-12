@@ -81,7 +81,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      */
     public function onConnect($clientId = 0)
     {
-        $this->reply($clientId, 220);
+        $this->reply($clientId, 220, $this->_server->domain);
     }
 
     // }}}
@@ -105,10 +105,10 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
             $argument = $matches[2];
         }
 
-        if ($argument) {
-            $this->reply($clientId, 250);
-        } else {
-            $this->reply($clientId, 501);
+        switch (strtolower($command)) {
+        case 'helo':
+            $this->onHelo($clientId, $argument);
+            break;
         }
     }
 
@@ -117,6 +117,22 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     /**#@+
      * @access protected
      */
+
+    // }}}
+    // {{{ onHelo()
+
+    /**
+    * @param integer $clientId
+    * @param string  $data
+     */
+    protected function onHelo($clientId, $data = null)
+    {
+        if (!$data) {
+            $this->reply($clientId, 501, 'Syntax: HELO hostname');
+        }
+
+        $this->reply($clientId, 250, $this->_server->domain);
+    }
 
     // }}}
     // {{{ reply()
