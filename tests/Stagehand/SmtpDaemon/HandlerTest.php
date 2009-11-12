@@ -105,7 +105,6 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
      */
     public function commandMail()
     {
-        $this->markTestIncomplete();
     }
 
     /**
@@ -145,7 +144,12 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
      */
     public function commandQuit()
     {
-        $this->markTestIncomplete();
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
+
+        $this->send("QUIT\r\n");
+        $this->assertEquals($this->getReply(), "220 Bye\r\n");
     }
 
     /**#@-*/

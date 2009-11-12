@@ -106,8 +106,12 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         }
 
         switch (strtolower($command)) {
+
         case 'helo':
             $this->onHelo($clientId, $argument);
+            break;
+        case 'quit':
+            $this->onQuit($clientId);
             break;
         }
     }
@@ -132,6 +136,18 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         }
 
         $this->reply($clientId, 250, $this->_server->domain);
+    }
+
+    // }}}
+    // {{{ onQuit()
+
+    /**
+    * @param integer $clientId
+     */
+    protected function onQuit($clientId)
+    {
+        $this->reply($clientId, 220, 'Bye');
+        $this->_server->closeConnection();
     }
 
     // }}}
