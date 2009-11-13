@@ -110,6 +110,21 @@ class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
         return $result;
     }
 
+    public function debug()
+    {
+        $data = "debug\r\n";
+        if (!@socket_write($this->socket, $data, strlen($data))) {
+            return;
+        }
+
+        $reply = $this->getReply();
+        if (!$reply) {
+            return;
+        }
+
+        return unserialize($reply);
+    }
+
     /**#@-*/
 
     /**#@+

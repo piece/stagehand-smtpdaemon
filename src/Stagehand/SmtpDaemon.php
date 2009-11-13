@@ -62,6 +62,7 @@ class Stagehand_SmtpDaemon
      */
 
     protected $debugMode = false;
+    protected $debugCommand;
 
     /**#@-*/
 
@@ -85,6 +86,7 @@ class Stagehand_SmtpDaemon
     public function start($host = 'localhost', $port = 9025)
     {
         $handler = new Stagehand_SmtpDaemon_Handler();
+        $handler->useDebugCommand($this->debugCommand);
 
         $driver = new Stagehand_SmtpDaemon_Driver($host, $port);
         $driver->setDebugMode($this->debugMode);
@@ -101,6 +103,17 @@ class Stagehand_SmtpDaemon
     public function setDebugMode($mode)
     {
         $this->debugMode = $mode;
+    }
+
+    // }}}
+    // {{{ useDebugCommand()
+
+    /**
+     * @param string $command
+     */
+    public function useDebugCommand($command)
+    {
+        $this->debugCommand = $command;
     }
 
     /**#@-*/

@@ -124,6 +124,10 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
         $this->send("MAIL from:<foo@example.com>\r\n");
         $this->assertEquals($this->getReply(), "250 Ok\r\n");
 
+        $context = $this->debug();
+
+        $this->assertEquals($context->getSender(), 'foo@example.com');
+
         $this->send("MAIL from:<foo@example.com>\r\n");
         $this->assertEquals($this->getReply(), "503 nested MAIL command\r\n");
     }

@@ -130,6 +130,27 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         case 'quit':
             $this->onQuit($clientId);
             break;
+        default:
+            if (strtolower($this->debugCommand) === $command) {
+                return $this->debug();
+            } else {
+                return $this->reply($clientId, 502,
+                                    'Error: command not recognized'
+                                    );
+            }
+        }
+    }
+
+    // }}}
+    // {{{ useDebugCommand()
+
+    /**
+     * @param string $command
+     */
+    public function useDebugCommand($command)
+    {
+        if ($command) {
+            $this->debugCommand = $command;
         }
     }
 
@@ -229,6 +250,17 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         }
 
         $this->_server->sendData($clientId, $result);
+    }
+
+    // }}}
+    // {{{ debug()
+
+    /**
+    * @param integer $clientId
+     */
+    protected function debug($clientId)
+    {
+        $this->_server->sendData($clientId, serialize($this->context));
     }
 
     /**#@-*/
