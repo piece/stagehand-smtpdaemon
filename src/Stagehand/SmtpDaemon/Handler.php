@@ -199,11 +199,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
             return;
         }
 
-        $address = $matches[1];
-        if (preg_match('/^<(.*)>$/', $address, $matches)) {
-            $address = $matches[1];
-        }
-
+        $address = $this->normalizeAddress($matches[1]);
         if (!$address) {
             $this->reply($clientId, 501, 'Syntax: MAIL FROM:<address>');
             return;
@@ -232,11 +228,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
             return;
         }
 
-        $address = $matches[1];
-        if (preg_match('/^<(.*)>$/', $address, $matches)) {
-            $address = $matches[1];
-        }
-
+        $address = $this->normalizeAddress($matches[1]);
         if (!$address) {
             $this->reply($clientId, 501, 'Syntax: RCPT TO:<address>');
             return;
@@ -286,6 +278,22 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         }
 
         $this->_server->sendData($clientId, $result);
+    }
+
+    // }}}
+    // {{{ normalizeAddress()
+
+    /**
+     * @param string $address
+     * @return string
+     */
+    protected function normalizeAddress($address)
+    {
+        if (!preg_match('/^<(.*)>$/', $address, $matches)) {
+            return $address;
+        }
+
+        return $matches[1];
     }
 
     // }}}
