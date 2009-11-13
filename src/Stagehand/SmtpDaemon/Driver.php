@@ -35,10 +35,10 @@
  * @since      File available since Release 0.1.0
  */
 
-// {{{ Stagehand_SmtpDaemon_Handler
+// {{{ Stagehand_SmtpDaemon_Driver
 
 /**
- * Stagehand_SmtpDaemon_Handler
+ * Stagehand_SmtpDaemon_Driver
  *
  * @package    Stagehand_SmtpDaemon
  * @copyright  2009 mbarracuda <mbarracuda@gmail.com>
