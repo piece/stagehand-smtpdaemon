@@ -137,7 +137,46 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
      */
     public function commandRcpt()
     {
-        $this->markTestIncomplete();
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
+
+        $this->send("RCPT\r\n");
+        $this->assertEquals($this->getReply(), "503 Error: need MAIL command\r\n");
+
+        $this->send("MAIL from:foo@example.com\r\n");
+        $this->getReply();
+
+        $this->send("RCPT\r\n");
+        $this->assertEquals($this->getReply(), "501 Syntax: RCPT TO:<address>\r\n");
+
+        $this->send("RCPT foo\r\n");
+        $this->assertEquals($this->getReply(), "501 Syntax: RCPT TO:<address>\r\n");
+
+        $this->send("RCPT to:\r\n");
+        $this->assertEquals($this->getReply(), "501 Syntax: RCPT TO:<address>\r\n");
+
+        $this->send("RCPT to:<>\r\n");
+        $this->assertEquals($this->getReply(), "501 Syntax: RCPT TO:<address>\r\n");
+
+        $this->send("RCPT to:<bar@example.com>\r\n");
+        $this->assertEquals($this->getReply(), "250 Ok\r\n");
+
+        $context = $this->debug();
+        $recipients = $context->getRecipients();
+
+        $this->assertEquals(count($recipients), 1);
+        $this->assertEquals($recipients[0], 'bar@example.com');
+
+        $this->send("RCPT to:<baz@example.com>\r\n");
+        $this->assertEquals($this->getReply(), "250 Ok\r\n");
+
+        $context = $this->debug();
+        $recipients = $context->getRecipients();
+
+        $this->assertEquals(count($recipients), 2);
+        $this->assertEquals($recipients[0], 'bar@example.com');
+        $this->assertEquals($recipients[1], 'baz@example.com');
     }
 
     /**
@@ -177,6 +216,8 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
         $this->connect();
         $this->assertTrue($this->connection);
         $this->getReply();
+
+        $context = $this->debug();
 
         $this->send("QUIT\r\n");
         $this->assertEquals($this->getReply(), "220 Bye\r\n");

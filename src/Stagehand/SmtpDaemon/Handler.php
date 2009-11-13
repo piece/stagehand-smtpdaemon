@@ -124,6 +124,9 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         case 'mail':
             $this->onMail($clientId, $argument);
             break;
+        case 'rcpt':
+            $this->onRcpt($clientId, $argument);
+            break;
         case 'noop':
             $this->onNoop($clientId);
             break;
@@ -207,6 +210,39 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         }
 
         $this->context->setSender($address);
+        $this->reply($clientId, 250, 'Ok');
+    }
+
+    // }}}
+    // {{{ onRcpt()
+
+    /**
+    * @param integer $clientId
+    * @param string  $data
+     */
+    protected function onRcpt($clientId, $data = null)
+    {
+        if (!$this->context->getSender()) {
+            $this->reply($clientId, 503, 'Error: need MAIL command');
+            return;
+        }
+
+        if (!preg_match('/^to:[ ]*(.+)$/i', $data, $matches)) {
+            $this->reply($clientId, 501, 'Syntax: RCPT TO:<address>');
+            return;
+        }
+
+        $address = $matches[1];
+        if (preg_match('/^<(.*)>$/', $address, $matches)) {
+            $address = $matches[1];
+        }
+
+        if (!$address) {
+            $this->reply($clientId, 501, 'Syntax: RCPT TO:<address>');
+            return;
+        }
+
+        $this->context->addRecipient($address);
         $this->reply($clientId, 250, 'Ok');
     }
 
