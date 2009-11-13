@@ -167,8 +167,8 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     // {{{ onHelo()
 
     /**
-    * @param integer $clientId
-    * @param string  $data
+     * @param integer $clientId
+     * @param string  $data
      */
     protected function onHelo($clientId, $data = null)
     {
@@ -217,8 +217,8 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     // {{{ onRcpt()
 
     /**
-    * @param integer $clientId
-    * @param string  $data
+     * @param integer $clientId
+     * @param string  $data
      */
     protected function onRcpt($clientId, $data = null)
     {
@@ -250,7 +250,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     // {{{ onNoop()
 
     /**
-    * @param integer $clientId
+     * @param integer $clientId
      */
     protected function onNoop($clientId)
     {
@@ -261,7 +261,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     // {{{ onQuit()
 
     /**
-    * @param integer $clientId
+     * @param integer $clientId
      */
     protected function onQuit($clientId)
     {
@@ -273,9 +273,9 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     // {{{ reply()
 
     /**
-    * @param integer $clientId
-    * @param integer $code
-    * @param string  $data
+     * @param integer $clientId
+     * @param integer $code
+     * @param string  $data
      */
     protected function reply($clientId, $code, $data = null)
     {
@@ -292,7 +292,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     // {{{ debug()
 
     /**
-    * @param integer $clientId
+     * @param integer $clientId
      */
     protected function debug($clientId)
     {
