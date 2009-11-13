@@ -61,7 +61,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      * @access protected
      */
 
-    protected $sender;
+    protected $context;
 
     /**#@-*/
 
@@ -76,14 +76,13 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      */
 
     // }}}
-    // {{{ getSender()
+    // {{{ __construct()
 
     /**
-     * @return string
      */
-    public function getSender()
+    public function __construct()
     {
-        return $this->sender;
+        $this->context = new Stagehand_SmtpDaemon_Context();
     }
 
     // }}}
@@ -111,15 +110,14 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         $argument = null;
 
         if (preg_match('/^[a-zA-Z]+$/', $data)) {
-            $command = $data;
+            $command = strtolower($data);
         } else {
             preg_match('/^([a-zA-Z]+)[ ]+(.*)$/', $data, $matches);
-            $command  = $matches[1];
+            $command  = strtolower($matches[1]);
             $argument = $matches[2];
         }
 
-        switch (strtolower($command)) {
-
+        switch ($command) {
         case 'helo':
             $this->onHelo($clientId, $argument);
             break;
@@ -167,7 +165,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      */
     protected function onMail($clientId, $data = null)
     {
-        if ($this->sender) {
+        if ($this->context->getSender()) {
             $this->reply($clientId, 503, 'nested MAIL command');
             return;
         }
@@ -187,7 +185,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
             return;
         }
 
-        $this->sender = $address;
+        $this->context->setSender($address);
         $this->reply($clientId, 250, 'Ok');
     }
 
