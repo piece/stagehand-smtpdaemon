@@ -184,6 +184,37 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
      */
     public function commandData()
     {
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
+
+        $this->send("DATA\r\n");
+        $this->assertEquals($this->getReply(), "503 Error: need RCPT command\r\n");
+        $context = $this->debug();
+        $this->assertFalse($context->isDataState());
+
+        $this->send("MAIL from:foo@example.com\r\n");
+        $this->getReply();
+
+        $this->send("DATA\r\n");
+        $this->assertEquals($this->getReply(), "503 Error: need RCPT command\r\n");
+        $context = $this->debug();
+        $this->assertFalse($context->isDataState());
+
+        $this->send("RCPT to:baz@example.com\r\n");
+        $this->getReply();
+
+        $this->send("DATA\r\n");
+        $this->assertEquals($this->getReply(), "354 End data with <CR><LF>.<CR><LF>\r\n");
+        $context = $this->debug();
+        $this->assertTrue($context->isDataState());
+    }
+
+    /**
+     * @test
+     */
+    public function sendContentsData()
+    {
         $this->markTestIncomplete();
     }
 

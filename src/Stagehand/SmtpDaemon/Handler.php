@@ -127,6 +127,9 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         case 'rcpt':
             $this->onRcpt($clientId, $argument);
             break;
+        case 'data':
+            $this->onData($clientId);
+            break;
         case 'noop':
             $this->onNoop($clientId);
             break;
@@ -236,6 +239,23 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
 
         $this->context->addRecipient($address);
         $this->reply($clientId, 250, 'Ok');
+    }
+
+    // }}}
+    // {{{ onData()
+
+    /**
+     * @param integer $clientId
+     */
+    protected function onData($clientId)
+    {
+        if (!count($this->context->getRecipients())) {
+            $this->reply($clientId, 503, 'Error: need RCPT command');
+            return;
+        }
+
+        $this->context->setDataState(true);
+        $this->reply($clientId, 354, 'End data with <CR><LF>.<CR><LF>');
     }
 
     // }}}

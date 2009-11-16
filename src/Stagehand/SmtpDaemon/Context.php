@@ -63,6 +63,7 @@ class Stagehand_SmtpDaemon_Context
 
     protected $sender;
     protected $recipients = array();
+    protected $isDataState = false;
 
     /**#@-*/
 
@@ -118,6 +119,28 @@ class Stagehand_SmtpDaemon_Context
     public function getRecipients()
     {
         return $this->recipients;
+    }
+
+    // }}}
+    // {{{ setDataState()
+
+    /**
+     * @param boolean $isDataState
+     */
+    public function setDataState($isDataState)
+    {
+        $this->isDataState = $isDataState ? true : false;
+    }
+
+    // }}}
+    // {{{ isDataState()
+
+    /**
+     * @return boolean
+     */
+    public function isDataState()
+    {
+        return $this->isDataState ? true : false;
     }
 
     /**#@-*/
