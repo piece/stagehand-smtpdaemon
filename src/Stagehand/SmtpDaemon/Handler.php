@@ -132,6 +132,9 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         case 'data':
             $this->onData($clientId);
             break;
+        case 'rset':
+            $this->onRset($clientId);
+            break;
         case 'noop':
             $this->onNoop($clientId);
             break;
@@ -182,6 +185,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
             return;
         }
 
+        $this->context->reset();
         $this->reply($clientId, 250, $this->_server->domain);
     }
 
@@ -275,6 +279,18 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         }
 
         $this->context->setDataState(false);
+        $this->reply($clientId, 250, 'Ok');
+    }
+
+    // }}}
+    // {{{ onRset()
+
+    /**
+     * @param integer $clientId
+     */
+    protected function onRset($clientId)
+    {
+        $this->context->reset();
         $this->reply($clientId, 250, 'Ok');
     }
 

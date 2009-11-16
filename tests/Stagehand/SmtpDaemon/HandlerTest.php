@@ -248,7 +248,36 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
      */
     public function commandRset()
     {
-        $this->markTestIncomplete();
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
+
+        $this->send("RSET\r\n");
+        $this->assertEquals($this->getReply(), "250 Ok\r\n");
+
+        $context = $this->debug();
+
+        $this->assertNull($context->getSender());
+        $this->assertEquals(count($context->getRecipients()), 0);
+
+        $this->send("MAIL from:foo@example.com\r\n");
+        $this->getReply();
+
+        $this->send("RCPT to:bar@example.com\r\n");
+        $this->getReply();
+
+        $context = $this->debug();
+
+        $this->assertEquals($context->getSender(), 'foo@example.com');
+        $this->assertEquals(count($context->getRecipients()), 1);
+
+        $this->send("RSET\r\n");
+        $this->assertEquals($this->getReply(), "250 Ok\r\n");
+
+        $context = $this->debug();
+
+        $this->assertNull($context->getSender());
+        $this->assertEquals(count($context->getRecipients()), 0);
     }
 
     /**

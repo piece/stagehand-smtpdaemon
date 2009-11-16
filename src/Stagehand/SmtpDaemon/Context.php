@@ -166,6 +166,19 @@ class Stagehand_SmtpDaemon_Context
         return $this->isDataState ? true : false;
     }
 
+    // }}}
+    // {{{ reset()
+
+    /**
+     */
+    public function reset()
+    {
+        $this->sender = null;
+        $this->recipients = array();
+        $this->data = null;
+        $this->isDataState = false;
+    }
+
     /**#@-*/
 
     /**#@+
