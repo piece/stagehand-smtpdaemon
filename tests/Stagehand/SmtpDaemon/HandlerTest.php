@@ -215,7 +215,32 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
      */
     public function sendContentsData()
     {
-        $this->markTestIncomplete();
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
+
+        $this->send("MAIL from:foo@example.com\r\n");
+        $this->getReply();
+
+        $this->send("RCPT to:baz@example.com\r\n");
+        $this->getReply();
+
+        $this->send("DATA\r\n");
+        $this->getReply();
+
+        $this->send("A first line\r\n");
+        $this->send("and second.\r\n");
+        $this->send(".\r\n");
+
+        $this->assertEquals($this->getReply(), "250 Ok\r\n");
+
+        $context = $this->debug();
+        $data = $context->getData();
+
+        $this->assertEquals($data,
+                            'A first line' . PHP_EOL .
+                            'and second.'  . PHP_EOL
+                            );
     }
 
     /**

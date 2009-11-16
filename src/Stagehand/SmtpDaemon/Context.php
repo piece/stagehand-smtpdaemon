@@ -63,6 +63,7 @@ class Stagehand_SmtpDaemon_Context
 
     protected $sender;
     protected $recipients = array();
+    protected $data;
     protected $isDataState = false;
 
     /**#@-*/
@@ -119,6 +120,28 @@ class Stagehand_SmtpDaemon_Context
     public function getRecipients()
     {
         return $this->recipients;
+    }
+
+    // }}}
+    // {{{ addDataLine()
+
+    /**
+     * @param string $data
+     */
+    public function addDataLine($data)
+    {
+        $this->data .= $data . PHP_EOL;
+    }
+
+    // }}}
+    // {{{ getData()
+
+    /**
+     * @return string
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 
     // }}}

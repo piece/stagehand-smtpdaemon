@@ -117,6 +117,15 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
             $argument = $matches[2];
         }
 
+        if (strtolower($this->debugCommand) === $command) {
+            return $this->debug($clientId);
+        }
+
+        if ($this->context->isDataState()) {
+            $this->onDataReceived($clientId, $data);
+            return;
+        }
+
         switch ($command) {
         case 'helo':
             $this->onHelo($clientId, $argument);
@@ -256,6 +265,24 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
 
         $this->context->setDataState(true);
         $this->reply($clientId, 354, 'End data with <CR><LF>.<CR><LF>');
+    }
+
+    // }}}
+    // {{{ onDataReceived()
+
+    /**
+     * @param integer $clientId
+     * @param string  $data
+     */
+    protected function onDataReceived($clientId, $data)
+    {
+        if (!preg_match('/^\.$/', $data)) {
+            $this->context->addDataLine($data);
+            return;
+        }
+
+        $this->context->setDataState(false);
+        $this->reply($clientId, 250, 'Ok');
     }
 
     // }}}
