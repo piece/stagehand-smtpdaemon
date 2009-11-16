@@ -278,7 +278,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
             return;
         }
 
-        $this->context->setDataState(false);
+        $this->context->reset();
         $this->reply($clientId, 250, 'Ok');
     }
 

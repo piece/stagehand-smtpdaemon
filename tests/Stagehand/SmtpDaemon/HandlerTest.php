@@ -235,12 +235,9 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
         $this->assertEquals($this->getReply(), "250 Ok\r\n");
 
         $context = $this->debug();
-        $data = $context->getData();
 
-        $this->assertEquals($data,
-                            'A first line' . PHP_EOL .
-                            'and second.'  . PHP_EOL
-                            );
+        $this->assertNull($context->getSender());
+        $this->assertEquals(count($context->getRecipients()), 0);
     }
 
     /**
