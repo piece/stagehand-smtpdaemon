@@ -117,15 +117,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
             return;
         }
 
-        $command = null;
-        $argument = null;
-        if (preg_match('/^[a-zA-Z]+$/', $data)) {
-            $command = strtolower($data);
-        } else {
-            preg_match('/^([a-zA-Z]+)[ ]+(.*)$/', $data, $matches);
-            $command  = strtolower($matches[1]);
-            $argument = $matches[2];
-        }
+        list($command, $argument) = $this->parseReceiveData($data);
 
         switch ($command) {
         case 'helo':
@@ -326,6 +318,29 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         }
 
         $this->_server->sendData($clientId, $result);
+    }
+
+    // }}}
+    // {{{ parseReceiveData()
+
+    /**
+     * @param string $data
+     * @return array
+     */
+    protected function parseReceiveData($data)
+    {
+        $command = null;
+        $argument = null;
+
+        if (preg_match('/^[a-zA-Z]+$/', $data)) {
+            $command = strtolower($data);
+        } else {
+            preg_match('/^([a-zA-Z]+)[ ]+(.*)$/', $data, $matches);
+            $command  = strtolower($matches[1]);
+            $argument = $matches[2];
+        }
+
+        return array($command, $argument);
     }
 
     // }}}
