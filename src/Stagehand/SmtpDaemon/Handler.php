@@ -107,24 +107,24 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     public function onReceiveData($clientId = 0, $data = "")
     {
         $data = trim($data);
+
+        if ($this->context->isDataState()) {
+            if ($this->isDebugCommand($data)) {
+                return $this->debug($clientId);
+            }
+
+            $this->onDataReceived($clientId, $data);
+            return;
+        }
+
         $command = null;
         $argument = null;
-
         if (preg_match('/^[a-zA-Z]+$/', $data)) {
             $command = strtolower($data);
         } else {
             preg_match('/^([a-zA-Z]+)[ ]+(.*)$/', $data, $matches);
             $command  = strtolower($matches[1]);
             $argument = $matches[2];
-        }
-
-        if ($this->isDebugCommand($command)) {
-            return $this->debug($clientId);
-        }
-
-        if ($this->context->isDataState()) {
-            $this->onDataReceived($clientId, $data);
-            return;
         }
 
         switch ($command) {
@@ -147,7 +147,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
             $this->onQuit($clientId);
             break;
         default:
-            if (strtolower($this->debugCommand) === $command) {
+            if ($this->isDebugCommand($command)) {
                 return $this->debug($clientId);
             } else {
                 return $this->reply($clientId, 502,
@@ -368,7 +368,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
             return false;
         }
 
-        return strtolower($this->debugCommand) === $command;
+        return strtolower($this->debugCommand) === strtolower($command);
     }
 
     /**#@-*/
