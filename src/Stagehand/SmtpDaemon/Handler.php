@@ -62,6 +62,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      */
 
     protected $context;
+    protected $debugCommand = null;
 
     /**#@-*/
 
@@ -117,7 +118,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
             $argument = $matches[2];
         }
 
-        if (strtolower($this->debugCommand) === $command) {
+        if ($this->isDebugCommand($command)) {
             return $this->debug($clientId);
         }
 
@@ -352,6 +353,22 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     protected function debug($clientId)
     {
         $this->_server->sendData($clientId, serialize($this->context));
+    }
+
+    // }}}
+    // {{{ isDebugCommand()
+
+    /**
+     * @param string $command
+     * @return boolean
+     */
+    protected function isDebugCommand($command)
+    {
+        if (!$this->debugCommand) {
+            return false;
+        }
+
+        return strtolower($this->debugCommand) === $command;
     }
 
     /**#@-*/
