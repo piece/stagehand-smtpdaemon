@@ -135,7 +135,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
             break;
         default:
             if (strtolower($this->debugCommand) === $command) {
-                return $this->debug();
+                return $this->debug($clientId);
             } else {
                 return $this->reply($clientId, 502,
                                     'Error: command not recognized'
