@@ -83,12 +83,23 @@ class Stagehand_SmtpDaemon
      * @param string $host
      * @param integer $port
      */
-    public function start($host = 'localhost', $port = 9025)
+    public function __construct($host = 'localhost', $port = 9025)
+    {
+        $this->host = $host;
+        $this->port = $port;
+    }
+
+    // }}}
+    // {{{ start()
+
+    /**
+     */
+    public function start()
     {
         $handler = new Stagehand_SmtpDaemon_Handler();
         $handler->useDebugCommand($this->debugCommand);
 
-        $driver = new Stagehand_SmtpDaemon_Driver($host, $port);
+        $driver = new Stagehand_SmtpDaemon_Driver($this->host, $this->port);
         $driver->setDebugMode($this->debugMode);
         $driver->setCallbackObject($handler);
         $driver->start();
