@@ -35,10 +35,10 @@
  * @since      File available since Release 0.1.0
  */
 
-// {{{ Stagehand_SmtpDaemon_Response
+// {{{ Stagehand_SmtpDaemon_Exception
 
 /**
- * Stagehand_SmtpDaemon_Response
+ * The exception class for Stagehand_SmtpDaemon.
  *
  * @package    Stagehand_SmtpDaemon
  * @copyright  2009 mbarracuda <mbarracuda@gmail.com>
@@ -46,130 +46,7 @@
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Stagehand_SmtpDaemon_Response
-{
-
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access protected
-     */
-
-    protected $code;
-    protected $message;
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    // }}}
-    // {{{ __construct()
-
-    /**
-     * @param string $code
-     * @param string $message
-     */
-    public function __construct($code = 554, $message = 'Transaction failed')
-    {
-        $this->code = $code;
-        $this->message = $message;
-    }
-
-    // }}}
-    // {{{ setCode()
-
-    /**
-     * @param string $code
-     */
-    public function setCode($code)
-    {
-        if (!preg_match('/^\d\d\d$/', $code)) {
-            throw new Stagehand_SmtpDaemon_Exception('A invalid response code [' . $code . ']');
-        }
-
-        $this->code = $code;
-    }
-
-    // }}}
-    // {{{ getCode()
-
-    /**
-     * @return string
-     */
-    public function getCode()
-    {
-        return $this->code;
-    }
-
-    // }}}
-    // {{{ addMessage()
-
-    /**
-     * @param string $message
-     */
-    public function setMessage($message)
-    {
-        $this->message = $message;
-    }
-
-    // }}}
-    // {{{ getMessage()
-
-    /**
-     * @return string
-     */
-    public function getMessage()
-    {
-        return $this->message;
-    }
-
-    // }}}
-    // {{{ getData()
-
-    /**
-     * @return string
-     */
-    public function getData()
-    {
-        if ($this->message) {
-            $result = sprintf("%d %s\r\n", $this->code, $this->message);
-        } else {
-            $result = sprintf("%d\r\n", $this->code);
-        }
-
-        return $result;
-    }
-
-    /**#@-*/
-
-    /**#@+
-     * @access protected
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    // }}}
-}
+class Stagehand_DirectorySnap_Exception extends Exception {}
 
 // }}}
 
