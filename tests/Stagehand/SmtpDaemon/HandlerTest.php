@@ -61,6 +61,8 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
      * @access protected
      */
 
+    protected $port = 9025;
+
     /**#@-*/
 
     /**#@+

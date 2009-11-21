@@ -35,10 +35,10 @@
  * @since      File available since Release 0.1.0
  */
 
-// {{{ Stagehand_PHP_SmtpDaemonTest
+// {{{ Stagehand_PHP_SmtpDaemon_PluginTest
 
 /**
- * Some tests for Stagehand_SmtpDaemon
+ * Some tests for Stagehand_SmtpDaemon_Plugin
  *
  * @package    Stagehand_SmtpDaemon
  * @copyright  2009 mbarracuda <mbarracuda@gmail.com>
@@ -46,7 +46,7 @@
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
+class Stagehand_SmtpDaemon_PluginTest extends Stagehand_SmtpDaemonTest
 {
 
     // {{{ properties
@@ -61,9 +61,7 @@ class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
      * @access protected
      */
 
-    protected $port;
-    protected $socket;
-    protected $connection;
+    protected $port = 9125;
 
     /**#@-*/
 
@@ -77,60 +75,15 @@ class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
      * @access public
      */
 
-    public function setUp()
+    /**
+     * @test
+     */
+    public function plugOnConnect()
     {
-        $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+        $this->connect();
 
-        socket_set_option($this->socket, SOL_SOCKET, SO_RCVTIMEO,
-                          array('sec' => 1, 'usec' => 0)
-                          );
-    }
-
-    public function tearDown()
-    {
-        $this->disconnect();
-    }
-
-    public function connect()
-    {
-        $this->connection = @socket_connect($this->socket,
-                                            'localhost', $this->port
-                                            );
-    }
-
-    public function disconnect()
-    {
-        @socket_close($this->socket);
-    }
-
-    public function send($data)
-    {
-        return @socket_write($this->socket, $data, strlen($data));
-    }
-
-    public function getReply()
-    {
-        $result = null;
-        if (!@socket_recv($this->socket, $result, 2048, 0)) {
-            $this->fail('timeout');
-        }
-
-        return $result;
-    }
-
-    public function debug()
-    {
-        $data = "debug\r\n";
-        if (!@socket_write($this->socket, $data, strlen($data))) {
-            return;
-        }
-
-        $reply = $this->getReply();
-        if (!$reply) {
-            return;
-        }
-
-        return unserialize($reply);
+        $this->assertTrue($this->connection);
+        $this->assertEquals($this->getReply(), "221 connect success\r\n");
     }
 
     /**#@-*/

@@ -35,23 +35,16 @@
  * @since      File available since Release 0.1.0
  */
 
-error_reporting(E_ALL | E_STRICT);
+require_once dirname(__FILE__) . '/prepare.php';
 
-set_include_path(realpath(dirname(__FILE__) . '/../src') . PATH_SEPARATOR .
-                 get_include_path()
-                 );
+$daemon = new Stagehand_SmtpDaemon('localhost', 9125);
+$daemon->setDebugMode(true);
+$daemon->useDebugCommand('debug');
 
-require_once 'PHPUnit/Framework.php';
-require_once 'Stagehand/Autoload.php';
-require_once dirname(__FILE__) . '/Stagehand/SmtpDaemonTest.php';
-require_once dirname(__FILE__) . '/Stagehand/SmtpDaemonTest/Plugin.php';
+$plugin = Stagehand_SmtpDaemonTest_Plugin::getInstance();
+$daemon->setPlugin($plugin);
 
-$loader = Stagehand_Autoload::legacyLoader();
-$loader->addNamespace('Stagehand');
-$loader->addNamespace('Net');
-Stagehand_Autoload::register($loader);
-
-Stagehand_LegacyError_PHPError::enableConversion();
+$daemon->start();
 
 /*
  * Local Variables:

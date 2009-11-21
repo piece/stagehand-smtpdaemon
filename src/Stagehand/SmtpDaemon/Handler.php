@@ -62,6 +62,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      */
 
     protected $context;
+    protected $plugin;
     protected $debugCommand = null;
 
     /**#@-*/
@@ -94,7 +95,14 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      */
     public function onConnect($clientId = 0)
     {
-        $this->reply($clientId, 220, $this->_server->domain);
+        if ($this->plugin) {
+            list($code, $message) = $this->plugin->onConnect($clientId);
+        } else {
+            $code = 220;
+            $message = $this->_server->domain;
+        }
+
+        $this->reply($clientId, $code, $message);
     }
 
     // }}}
@@ -150,6 +158,19 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
                                     );
             }
         }
+    }
+
+    // }}}
+    // {{{ setPlugin()
+
+    /**
+     * @param object $plugin
+     */
+    public function setPlugin($plugin)
+    {
+        $this->plugin = $plugin;
+        $this->plugin->setServer($this->_server);
+        $this->plugin->setContext($this->context);
     }
 
     // }}}

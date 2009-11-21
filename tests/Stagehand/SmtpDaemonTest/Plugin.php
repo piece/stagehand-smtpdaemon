@@ -35,10 +35,10 @@
  * @since      File available since Release 0.1.0
  */
 
-// {{{ Stagehand_PHP_SmtpDaemonTest
+// {{{ Stagehand_PHP_SmtpDaemonTest_Plugin
 
 /**
- * Some tests for Stagehand_SmtpDaemon
+ * A plugin class for Stagehand_SmtpDaemonTest
  *
  * @package    Stagehand_SmtpDaemon
  * @copyright  2009 mbarracuda <mbarracuda@gmail.com>
@@ -46,7 +46,7 @@
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
+class Stagehand_SmtpDaemonTest_Plugin
 {
 
     // {{{ properties
@@ -61,9 +61,9 @@ class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
      * @access protected
      */
 
-    protected $port;
-    protected $socket;
-    protected $connection;
+    protected static $instance;
+    protected $server;
+    protected $context;
 
     /**#@-*/
 
@@ -77,60 +77,71 @@ class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
      * @access public
      */
 
-    public function setUp()
-    {
-        $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+    // }}}
+    // {{{ getInstance()
 
-        socket_set_option($this->socket, SOL_SOCKET, SO_RCVTIMEO,
-                          array('sec' => 1, 'usec' => 0)
-                          );
-    }
-
-    public function tearDown()
+    /**
+    * @return Stagehand_SmtpDaemonTest_Plugin
+     */
+    public static function getInstance()
     {
-        $this->disconnect();
-    }
-
-    public function connect()
-    {
-        $this->connection = @socket_connect($this->socket,
-                                            'localhost', $this->port
-                                            );
-    }
-
-    public function disconnect()
-    {
-        @socket_close($this->socket);
-    }
-
-    public function send($data)
-    {
-        return @socket_write($this->socket, $data, strlen($data));
-    }
-
-    public function getReply()
-    {
-        $result = null;
-        if (!@socket_recv($this->socket, $result, 2048, 0)) {
-            $this->fail('timeout');
+        if (is_null(self::$instance)) {
+            self::$instance = new Stagehand_SmtpDaemonTest_Plugin();
         }
 
-        return $result;
+        return self::$instance;
     }
 
-    public function debug()
+    // }}}
+    // {{{ setServer()
+
+    /**
+    * @param object $server
+     */
+    public function setServer($server)
     {
-        $data = "debug\r\n";
-        if (!@socket_write($this->socket, $data, strlen($data))) {
-            return;
+        $this->server = $server;
+    }
+
+    // }}}
+    // {{{ setContext()
+
+    /**
+    * @param object $context
+     */
+    public function setContext($context)
+    {
+        $this->context = $context;
+    }
+
+    // }}}
+    // {{{ onConnect()
+
+    /**
+     * @param integer $clientId
+     */
+    public function onConnect($clientId = 0)
+    {
+        return array(221, 'connect success');
+    }
+
+    // }}}
+    // {{{ reply()
+
+    /**
+     * @param integer $clientId
+     * @param integer $code
+     * @param string  $data
+     */
+    protected function reply($clientId, $code, $data = null)
+    {
+        if ($data) {
+            $result = sprintf("%d %s\r\n", $code, $data);
+        } else {
+            $result = sprintf("%d\r\n", $code);
         }
 
-        $reply = $this->getReply();
-        if (!$reply) {
-            return;
-        }
-
-        return unserialize($reply);
+        $this->server->sendData($clientId, $result);
     }
 
     /**#@-*/
