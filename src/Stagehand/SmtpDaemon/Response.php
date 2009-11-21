@@ -35,10 +35,10 @@
  * @since      File available since Release 0.1.0
  */
 
-// {{{ Stagehand_PHP_SmtpDaemonTest_Plugin
+// {{{ Stagehand_SmtpDaemon_Response
 
 /**
- * A plugin class for Stagehand_SmtpDaemonTest
+ * Stagehand_SmtpDaemon_Response
  *
  * @package    Stagehand_SmtpDaemon
  * @copyright  2009 mbarracuda <mbarracuda@gmail.com>
@@ -46,7 +46,7 @@
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Stagehand_SmtpDaemonTest_Plugin
+class Stagehand_SmtpDaemon_Response
 {
 
     // {{{ properties
@@ -61,9 +61,8 @@ class Stagehand_SmtpDaemonTest_Plugin
      * @access protected
      */
 
-    protected static $instance;
-    protected $server;
-    protected $context;
+    protected $code;
+    protected $message;
 
     /**#@-*/
 
@@ -78,82 +77,77 @@ class Stagehand_SmtpDaemonTest_Plugin
      */
 
     // }}}
-    // {{{ getInstance()
+    // {{{ __construct()
 
     /**
-    * @return Stagehand_SmtpDaemonTest_Plugin
+     * @param string $code
+     * @param string $message
      */
-    public static function getInstance()
+    public function __construct($code = 554, $message = 'Transaction failed')
     {
-        if (is_null(self::$instance)) {
-            self::$instance = new Stagehand_SmtpDaemonTest_Plugin();
-        }
-
-        return self::$instance;
+        $this->code = $code;
+        $this->message = $message;
     }
 
     // }}}
-    // {{{ setServer()
+    // {{{ setCode()
 
     /**
-    * @param object $server
+     * @param string $code
      */
-    public function setServer($server)
+    public function setCode($code)
     {
-        $this->server = $server;
+        $this->code = $code;
     }
 
     // }}}
-    // {{{ setContext()
+    // {{{ getCode()
 
     /**
-    * @param object $context
+     * @return string
      */
-    public function setContext($context)
+    public function getCode()
     {
-        $this->context = $context;
+        return $this->code;
     }
 
     // }}}
-    // {{{ setResponse()
+    // {{{ addMessage()
 
     /**
-    * @param object $response
+     * @param string $message
      */
-    public function setResponse($response)
+    public function setMessage($message)
     {
-        $this->response = $response;
+        $this->message = $message;
     }
 
     // }}}
-    // {{{ onConnect()
+    // {{{ getMessage()
 
     /**
-     * @param integer $clientId
+     * @return string
      */
-    public function onConnect($clientId = 0)
+    public function getMessage()
     {
-        $this->response->setCode(221);
-        $this->response->setMessage('connect success');
+        return $this->message;
     }
 
     // }}}
-    // {{{ reply()
+    // {{{ getData()
 
     /**
-     * @param integer $clientId
-     * @param integer $code
-     * @param string  $data
+     * @return string
      */
-    protected function reply($clientId, $code, $data = null)
+    public function getData()
     {
-        if ($data) {
-            $result = sprintf("%d %s\r\n", $code, $data);
+        if ($this->message) {
+            $result = sprintf("%d %s\r\n", $this->code, $this->message);
         } else {
-            $result = sprintf("%d\r\n", $code);
+            $result = sprintf("%d\r\n", $this->code);
         }
 
-        $this->server->sendData($clientId, $result);
+        return $result;
     }
 
     /**#@-*/
