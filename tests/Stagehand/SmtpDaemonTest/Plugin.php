@@ -134,7 +134,7 @@ class Stagehand_SmtpDaemonTest_Plugin
     public function onConnect($clientId = 0)
     {
         $this->response->setCode(221);
-        $this->response->setMessage('connect success');
+        $this->response->setMessage('attached to connection');
     }
 
     // }}}

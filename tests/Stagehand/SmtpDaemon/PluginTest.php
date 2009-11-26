@@ -78,12 +78,12 @@ class Stagehand_SmtpDaemon_PluginTest extends Stagehand_SmtpDaemonTest
     /**
      * @test
      */
-    public function plugOnConnect()
+    public function attachToConnect()
     {
         $this->connect();
 
         $this->assertTrue($this->connection);
-        $this->assertEquals($this->getReply(), "221 connect success\r\n");
+        $this->assertEquals($this->getReply(), "221 attached to connection\r\n");
     }
 
     /**#@-*/
