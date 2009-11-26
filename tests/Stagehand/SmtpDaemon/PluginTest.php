@@ -237,6 +237,26 @@ class Stagehand_SmtpDaemon_PluginTest extends Stagehand_SmtpDaemonTest
         $this->assertEquals($this->getReply(), "221 attached to quit\r\n");
     }
 
+    /**
+     * @test
+     */
+    public function disallowInMailByPlugin()
+    {
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
+
+        $this->send("HELO localhost\r\n");
+        $this->getReply();
+
+        $this->send("MAIL from:ng@example.com\r\n");
+        $this->assertEquals($this->getReply(), "421\r\n");
+
+        $context = $this->debug();
+
+        $this->assertNull($context->getSender());
+    }
+
     /**#@-*/
 
     /**#@+

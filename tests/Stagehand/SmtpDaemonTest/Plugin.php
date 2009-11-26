@@ -102,6 +102,14 @@ class Stagehand_SmtpDaemonTest_Plugin extends Stagehand_SmtpDaemon_Plugin_Abstra
      */
     public function onMail()
     {
+        if (preg_match('/^ng@/', $this->context->getSender())) {
+            $this->context->setSender(null);
+            $this->response->setCode(421);
+            $this->response->setMessage(null);
+
+            return;
+        }
+
         $this->response->setCode(251);
         $this->response->setMessage('attached to mail');
     }
