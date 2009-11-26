@@ -99,6 +99,144 @@ class Stagehand_SmtpDaemon_PluginTest extends Stagehand_SmtpDaemonTest
         $this->assertEquals($this->getReply(), "251 attached to helo\r\n");
     }
 
+    /**
+     * @test
+     */
+    public function attachToMail()
+    {
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
+
+        $this->send("HELO localhost\r\n");
+        $this->getReply();
+
+        $this->send("MAIL from:foo@example.com\r\n");
+        $this->assertEquals($this->getReply(), "251 attached to mail\r\n");
+
+        $context = $this->debug();
+
+        $this->assertEquals($context->getSender(), 'foo@example.com');
+    }
+
+    /**
+     * @test
+     */
+    public function attachToRcpt()
+    {
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
+
+        $this->send("HELO localhost\r\n");
+        $this->getReply();
+
+        $this->send("MAIL from:foo@example.com\r\n");
+        $this->getReply();
+
+        $this->send("RCPT to:bar@example.com\r\n");
+        $this->assertEquals($this->getReply(), "251 attached to rcpt\r\n");
+
+        $context = $this->debug();
+        $recipients = $context->getRecipients();
+
+        $this->assertEquals(count($recipients), 1);
+        $this->assertEquals($recipients[0], 'bar@example.com');
+    }
+
+    /**
+     * @test
+     */
+    public function attachToData()
+    {
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
+
+        $this->send("HELO localhost\r\n");
+        $this->getReply();
+
+        $this->send("MAIL from:foo@example.com\r\n");
+        $this->getReply();
+
+        $this->send("RCPT to:bar@example.com\r\n");
+        $this->getReply();
+
+        $this->send("DATA\r\n");
+        $this->assertEquals($this->getReply(), "354 attached to data\r\n");
+
+        $context = $this->debug();
+
+        $this->assertTrue($context->isDataState());
+    }
+
+    /**
+     * @test
+     */
+    public function attachToDataReceived()
+    {
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
+
+        $this->send("HELO localhost\r\n");
+        $this->getReply();
+
+        $this->send("MAIL from:foo@example.com\r\n");
+        $this->getReply();
+
+        $this->send("RCPT to:bar@example.com\r\n");
+        $this->getReply();
+
+        $this->send("DATA\r\n");
+        $this->getReply();
+
+        $this->send("foo\r\n");
+        $this->send("bar\r\n");
+        $this->send(".\r\n");
+
+        $this->assertEquals($this->getReply(), "251 attached to data received\r\n");
+    }
+
+    /**
+     * @test
+     */
+    public function attachToRset()
+    {
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
+
+        $this->send("RSET\r\n");
+        $this->assertEquals($this->getReply(), "251 attached to rset\r\n");
+    }
+
+    /**
+     * @test
+     */
+    public function attachToNoop()
+    {
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
+
+        $this->send("Noop\r\n");
+        $this->assertEquals($this->getReply(), "251 attached to noop\r\n");
+    }
+
+    /**
+     * @test
+     */
+    public function attachToQuit()
+    {
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
+
+        $this->send("QUIT\r\n");
+        $this->assertEquals($this->getReply(), "221 attached to quit\r\n");
+    }
+
     /**#@-*/
 
     /**#@+

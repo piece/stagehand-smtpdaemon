@@ -77,9 +77,8 @@ class Stagehand_SmtpDaemonTest_Plugin extends Stagehand_SmtpDaemon_Plugin_Abstra
     // {{{ onConnect()
 
     /**
-     * @param integer $clientId
      */
-    public function onConnect($clientId = 0)
+    public function onConnect()
     {
         $this->response->setCode(221);
         $this->response->setMessage('attached to connection');
@@ -89,12 +88,88 @@ class Stagehand_SmtpDaemonTest_Plugin extends Stagehand_SmtpDaemon_Plugin_Abstra
     // {{{ onHelo()
 
     /**
-     * @param integer $clientId
      */
-    public function onHelo($clientId = 0)
+    public function onHelo()
     {
         $this->response->setCode(251);
         $this->response->setMessage('attached to helo');
+    }
+
+    // }}}
+    // {{{ onMail()
+
+    /**
+     */
+    public function onMail()
+    {
+        $this->response->setCode(251);
+        $this->response->setMessage('attached to mail');
+    }
+
+    // }}}
+    // {{{ onRcpt()
+
+    /**
+     */
+    public function onRcpt()
+    {
+        $this->response->setCode(251);
+        $this->response->setMessage('attached to rcpt');
+    }
+
+    // }}}
+    // {{{ onData()
+
+    /**
+     */
+    public function onData()
+    {
+        $this->response->setCode(354);
+        $this->response->setMessage('attached to data');
+    }
+
+    // }}}
+    // {{{ onDataReceived()
+
+    /**
+     */
+    public function onDataReceived()
+    {
+        $this->response->setCode(251);
+        $this->response->setMessage('attached to data received');
+    }
+
+    // }}}
+    // {{{ onRset()
+
+    /**
+     */
+    public function onRset()
+    {
+        $this->response->setCode(251);
+        $this->response->setMessage('attached to rset');
+    }
+
+    // }}}
+    // {{{ onNoop()
+
+    /**
+     */
+    public function onNoop()
+    {
+        $this->response->setCode(251);
+        $this->response->setMessage('attached to noop');
+    }
+
+    // }}}
+    // {{{ onQuit()
+
+    /**
+     */
+    public function onQuit()
+    {
+        $this->response->setCode(221);
+        $this->response->setMessage('attached to quit');
     }
 
     /**#@-*/
