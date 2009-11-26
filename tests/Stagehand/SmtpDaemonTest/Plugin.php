@@ -138,6 +138,18 @@ class Stagehand_SmtpDaemonTest_Plugin
     }
 
     // }}}
+    // {{{ onHelo()
+
+    /**
+     * @param integer $clientId
+     */
+    public function onHelo($clientId = 0)
+    {
+        $this->response->setCode(251);
+        $this->response->setMessage('attached to helo');
+    }
+
+    // }}}
     // {{{ reply()
 
     /**

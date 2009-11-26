@@ -86,6 +86,19 @@ class Stagehand_SmtpDaemon_PluginTest extends Stagehand_SmtpDaemonTest
         $this->assertEquals($this->getReply(), "221 attached to connection\r\n");
     }
 
+    /**
+     * @test
+     */
+    public function attachToHelo()
+    {
+        $this->connect();
+        $this->assertTrue($this->connection);
+        $this->getReply();
+
+        $this->send("HELO localhost\r\n");
+        $this->assertEquals($this->getReply(), "251 attached to helo\r\n");
+    }
+
     /**#@-*/
 
     /**#@+

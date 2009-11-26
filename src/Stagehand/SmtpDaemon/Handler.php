@@ -215,6 +215,11 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
 
         $this->response->setCode(250);
         $this->response->setMessage($this->_server->domain);
+
+        if ($this->plugin) {
+            $this->plugin->onHelo($clientId);
+        }
+
         $this->reply();
     }
 
