@@ -38,7 +38,7 @@
 // {{{ Stagehand_SmtpDaemon_Plugin_Abstract
 
 /**
- * Stagehand_SmtpDaemon_Response
+ * A plugin abstract for Stagehand_SmtpDaemon.
  *
  * @package    Stagehand_SmtpDaemon
  * @copyright  2009 mbarracuda <mbarracuda@gmail.com>
