@@ -220,7 +220,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
             $this->plugin->onHelo($clientId);
         }
 
-        $this->reply();
+        $this->reply($clientId);
     }
 
     // }}}
