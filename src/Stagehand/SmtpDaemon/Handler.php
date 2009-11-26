@@ -97,11 +97,11 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      */
     public function onConnect($clientId = 0)
     {
+        $this->response->setCode(220);
+        $this->response->setMessage($this->_server->domain);
+
         if ($this->plugin) {
             $this->plugin->onConnect($clientId);
-        } else {
-            $this->response->setCode(220);
-            $this->response->setMessage($this->_server->domain);
         }
 
         $this->reply($clientId);
