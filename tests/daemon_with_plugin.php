@@ -41,7 +41,7 @@ $daemon = new Stagehand_SmtpDaemon('localhost', 9125);
 $daemon->setDebugMode(true);
 $daemon->useDebugCommand('debug');
 
-$plugin = Stagehand_SmtpDaemonTest_Plugin::getInstance();
+$plugin = new Stagehand_SmtpDaemonTest_Plugin();
 $daemon->setPlugin($plugin);
 
 $daemon->start();

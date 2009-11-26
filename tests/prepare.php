@@ -43,8 +43,6 @@ set_include_path(realpath(dirname(__FILE__) . '/../src') . PATH_SEPARATOR .
 
 require_once 'PHPUnit/Framework.php';
 require_once 'Stagehand/Autoload.php';
-require_once dirname(__FILE__) . '/Stagehand/SmtpDaemonTest.php';
-require_once dirname(__FILE__) . '/Stagehand/SmtpDaemonTest/Plugin.php';
 
 $loader = Stagehand_Autoload::legacyLoader();
 $loader->addNamespace('Stagehand');
@@ -52,6 +50,9 @@ $loader->addNamespace('Net');
 Stagehand_Autoload::register($loader);
 
 Stagehand_LegacyError_PHPError::enableConversion();
+
+require_once dirname(__FILE__) . '/Stagehand/SmtpDaemonTest.php';
+require_once dirname(__FILE__) . '/Stagehand/SmtpDaemonTest/Plugin.php';
 
 /*
  * Local Variables:

@@ -35,10 +35,10 @@
  * @since      File available since Release 0.1.0
  */
 
-// {{{ Stagehand_PHP_SmtpDaemonTest_Plugin
+// {{{ Stagehand_SmtpDaemon_PluginAbstract
 
 /**
- * A plugin class for Stagehand_SmtpDaemonTest
+ * Stagehand_SmtpDaemon_Response
  *
  * @package    Stagehand_SmtpDaemon
  * @copyright  2009 mbarracuda <mbarracuda@gmail.com>
@@ -46,7 +46,7 @@
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Stagehand_SmtpDaemonTest_Plugin extends Stagehand_SmtpDaemon_PluginAbstract
+abstract class Stagehand_SmtpDaemon_PluginAbstract
 {
 
     // {{{ properties
@@ -61,6 +61,9 @@ class Stagehand_SmtpDaemonTest_Plugin extends Stagehand_SmtpDaemon_PluginAbstrac
      * @access protected
      */
 
+    protected $server;
+    protected $context;
+
     /**#@-*/
 
     /**#@+
@@ -74,6 +77,39 @@ class Stagehand_SmtpDaemonTest_Plugin extends Stagehand_SmtpDaemon_PluginAbstrac
      */
 
     // }}}
+    // {{{ setServer()
+
+    /**
+    * @param object $server
+     */
+    public function setServer($server)
+    {
+        $this->server = $server;
+    }
+
+    // }}}
+    // {{{ setContext()
+
+    /**
+    * @param object $context
+     */
+    public function setContext($context)
+    {
+        $this->context = $context;
+    }
+
+    // }}}
+    // {{{ setResponse()
+
+    /**
+    * @param object $response
+     */
+    public function setResponse($response)
+    {
+        $this->response = $response;
+    }
+
+    // }}}
     // {{{ onConnect()
 
     /**
@@ -81,8 +117,6 @@ class Stagehand_SmtpDaemonTest_Plugin extends Stagehand_SmtpDaemon_PluginAbstrac
      */
     public function onConnect($clientId = 0)
     {
-        $this->response->setCode(221);
-        $this->response->setMessage('attached to connection');
     }
 
     // }}}
@@ -93,8 +127,6 @@ class Stagehand_SmtpDaemonTest_Plugin extends Stagehand_SmtpDaemon_PluginAbstrac
      */
     public function onHelo($clientId = 0)
     {
-        $this->response->setCode(251);
-        $this->response->setMessage('attached to helo');
     }
 
     /**#@-*/
