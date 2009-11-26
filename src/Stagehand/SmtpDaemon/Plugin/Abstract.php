@@ -35,7 +35,7 @@
  * @since      File available since Release 0.1.0
  */
 
-// {{{ Stagehand_SmtpDaemon_PluginAbstract
+// {{{ Stagehand_SmtpDaemon_Plugin_Abstract
 
 /**
  * Stagehand_SmtpDaemon_Response
@@ -46,7 +46,7 @@
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-abstract class Stagehand_SmtpDaemon_PluginAbstract
+abstract class Stagehand_SmtpDaemon_Plugin_Abstract
 {
 
     // {{{ properties
@@ -113,9 +113,8 @@ abstract class Stagehand_SmtpDaemon_PluginAbstract
     // {{{ onConnect()
 
     /**
-     * @param integer $clientId
      */
-    public function onConnect($clientId = 0)
+    public function onConnect()
     {
     }
 
@@ -123,9 +122,8 @@ abstract class Stagehand_SmtpDaemon_PluginAbstract
     // {{{ onHelo()
 
     /**
-     * @param integer $clientId
      */
-    public function onHelo($clientId = 0)
+    public function onHelo()
     {
     }
 

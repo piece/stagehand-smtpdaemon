@@ -46,7 +46,7 @@
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Stagehand_SmtpDaemonTest_Plugin extends Stagehand_SmtpDaemon_PluginAbstract
+class Stagehand_SmtpDaemonTest_Plugin extends Stagehand_SmtpDaemon_Plugin_Abstract
 {
 
     // {{{ properties
