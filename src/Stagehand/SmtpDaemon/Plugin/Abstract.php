@@ -127,6 +127,69 @@ abstract class Stagehand_SmtpDaemon_Plugin_Abstract
     {
     }
 
+    // }}}
+    // {{{ onMail()
+
+    /**
+     */
+    public function onMail()
+    {
+    }
+
+    // }}}
+    // {{{ onRcpt()
+
+    /**
+     */
+    public function onRcpt()
+    {
+    }
+
+    // }}}
+    // {{{ onData()
+
+    /**
+     */
+    public function onData()
+    {
+    }
+
+    // }}}
+    // {{{ onDataReceived()
+
+    /**
+     */
+    public function onDataReceived()
+    {
+    }
+
+    // }}}
+    // {{{ onRset()
+
+    /**
+     */
+    public function onRset()
+    {
+    }
+
+    // }}}
+    // {{{ onNoop()
+
+    /**
+     */
+    public function onNoop()
+    {
+    }
+
+    // }}}
+    // {{{ onQuit()
+
+    /**
+     */
+    public function onQuit()
+    {
+    }
+
     /**#@-*/
 
     /**#@+
