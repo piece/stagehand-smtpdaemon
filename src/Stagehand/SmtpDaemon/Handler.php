@@ -62,7 +62,6 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      */
 
     protected $context;
-    protected $plugin;
     protected $response;
     protected $debugCommand = null;
 
@@ -87,9 +86,6 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     {
         $this->context = new Stagehand_SmtpDaemon_Context();
         $this->response = new Stagehand_SmtpDaemon_Response();
-
-        $plugin = new Stagehand_SmtpDaemon_Plugin_Nop();
-        $this->setPlugin($plugin);
     }
 
     // }}}
@@ -102,7 +98,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     {
         $this->response->setCode(220);
         $this->response->setMessage($this->_server->domain);
-        $this->plugin->onConnect($clientId);
+
         $this->reply($clientId);
     }
 
@@ -162,21 +158,6 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     }
 
     // }}}
-    // {{{ setPlugin()
-
-    /**
-     * @param object $plugin
-     */
-    public function setPlugin($plugin)
-    {
-        $this->plugin = $plugin;
-
-        $this->plugin->setServer($this->_server);
-        $this->plugin->setContext($this->context);
-        $this->plugin->setResponse($this->response);
-    }
-
-    // }}}
     // {{{ useDebugCommand()
 
     /**
@@ -215,7 +196,6 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         $this->response->setCode(250);
         $this->response->setMessage($this->_server->domain);
 
-        $this->plugin->onHelo($clientId);
         $this->reply($clientId);
     }
 
@@ -252,7 +232,6 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         $this->response->setCode(250);
         $this->response->setMessage('Ok');
 
-        $this->plugin->onMail();
         $this->reply($clientId);
     }
 
@@ -289,7 +268,6 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         $this->response->setCode(250);
         $this->response->setMessage('Ok');
 
-        $this->plugin->onRcpt();
         $this->reply($clientId);
     }
 
@@ -312,7 +290,6 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         $this->response->setCode(354);
         $this->response->setMessage('End data with <CR><LF>.<CR><LF>');
 
-        $this->plugin->onData();
         $this->reply($clientId);
     }
 
@@ -332,7 +309,6 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
 
         $this->response->setCode(250);
         $this->response->setMessage('Ok');
-        $this->plugin->onDataReceived();
 
         $this->context->reset();
         $this->reply($clientId);
@@ -351,7 +327,6 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         $this->response->setCode(250);
         $this->response->setMessage('Ok');
 
-        $this->plugin->onRset();
         $this->reply($clientId);
     }
 
@@ -366,7 +341,6 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         $this->response->setCode(250);
         $this->response->setMessage('Ok');
 
-        $this->plugin->onNoop();
         $this->reply($clientId);
     }
 
@@ -381,7 +355,6 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         $this->response->setCode(220);
         $this->response->setMessage('Bye');
 
-        $this->plugin->onQuit();
         $this->reply($clientId);
 
         $this->_server->closeConnection();

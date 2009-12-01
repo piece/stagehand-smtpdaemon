@@ -61,7 +61,6 @@ class Stagehand_SmtpDaemon
      * @access protected
      */
 
-    protected $plugin;
     protected $debugMode = false;
     protected $debugCommand;
 
@@ -99,25 +98,11 @@ class Stagehand_SmtpDaemon
     {
         $handler = new Stagehand_SmtpDaemon_Handler();
         $handler->useDebugCommand($this->debugCommand);
-        if ($this->plugin) {
-            $handler->setPlugin($this->plugin);
-        }
 
         $driver = new Stagehand_SmtpDaemon_Driver($this->host, $this->port);
         $driver->setDebugMode($this->debugMode);
         $driver->setCallbackObject($handler);
         $driver->start();
-    }
-
-    // }}}
-    // {{{ setPlugin()
-
-    /**
-     * @param object $plugin
-     */
-    public function setPlugin($plugin)
-    {
-        $this->plugin = $plugin;
     }
 
     // }}}

@@ -52,7 +52,6 @@ Stagehand_Autoload::register($loader);
 Stagehand_LegacyError_PHPError::enableConversion();
 
 require_once dirname(__FILE__) . '/Stagehand/SmtpDaemonTest.php';
-require_once dirname(__FILE__) . '/Stagehand/SmtpDaemonTest/Plugin.php';
 
 /*
  * Local Variables:
