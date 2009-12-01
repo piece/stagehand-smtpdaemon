@@ -124,6 +124,9 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
 
         list($command, $argument) = $this->parseReceiveData($data);
 
+        $this->response->setCode(554);
+        $this->response->setMessage('Transaction failed');
+
         switch ($command) {
         case 'helo':
             $this->onHelo($clientId, $argument);
@@ -185,18 +188,32 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      */
     protected function onHelo($clientId, $data = null)
     {
-        if (!$data) {
-            $this->response->setCode(501);
-            $this->response->setMessage('Syntax: HELO hostname');
-            return $this->reply($clientId);
+        if ($this->validateHeloHost($data)) {
+            $this->context->reset();
         }
 
-        $this->context->reset();
+        $this->reply($clientId);
+    }
+
+    // }}}
+    // {{{ validateHeloHost()
+
+    /**
+     * @param string $domain
+     * @return boolean
+     */
+    protected function validateHeloHost($host)
+    {
+        if (!$host) {
+            $this->response->setCode(501);
+            $this->response->setMessage('Syntax: HELO hostname');
+            return false;
+        }
 
         $this->response->setCode(250);
         $this->response->setMessage($this->_server->domain);
 
-        $this->reply($clientId);
+        return true;
     }
 
     // }}}
@@ -208,31 +225,43 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      */
     protected function onMail($clientId, $data = null)
     {
+        $sender = null;
+        if (preg_match('/^from:[ ]*(.+)$/i', $data, $matches)) {
+            $sender = $this->normalizeAddress($matches[1]);
+        }
+
+        if ($this->validateSender($sender)) {
+            $this->context->setSender($sender);
+        }
+
+        $this->reply($clientId);
+    }
+
+    // }}}
+    // {{{ validateSender()
+
+    /**
+     * @param string $sender
+     * @return boolean
+     */
+    protected function validateSender($sender)
+    {
         if ($this->context->getSender()) {
             $this->response->setCode(503);
             $this->response->setMessage('nested MAIL command');
-            return $this->reply($clientId);
+            return false;
         }
 
-        if (!preg_match('/^from:[ ]*(.+)$/i', $data, $matches)) {
+        if (!$sender) {
             $this->response->setCode(501);
             $this->response->setMessage('Syntax: MAIL FROM:<address>');
-            return $this->reply($clientId);
+            return false;
         }
-
-        $address = $this->normalizeAddress($matches[1]);
-        if (!$address) {
-            $this->response->setCode(501);
-            $this->response->setMessage('Syntax: MAIL FROM:<address>');
-            return $this->reply($clientId);
-        }
-
-        $this->context->setSender($address);
 
         $this->response->setCode(250);
         $this->response->setMessage('Ok');
 
-        $this->reply($clientId);
+        return true;
     }
 
     // }}}
@@ -244,31 +273,43 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      */
     protected function onRcpt($clientId, $data = null)
     {
+        $recipient = null;
+        if (preg_match('/^to:[ ]*(.+)$/i', $data, $matches)) {
+            $recipient = $this->normalizeAddress($matches[1]);
+        }
+
+        if ($this->validateRecipient($recipient)) {
+            $this->context->addRecipient($recipient);
+        }
+
+        $this->reply($clientId);
+    }
+
+    // }}}
+    // {{{ validateRecipient()
+
+    /**
+     * @param string $recipient
+     * @return boolean
+     */
+    protected function validateRecipient($recipient)
+    {
         if (!$this->context->getSender()) {
             $this->response->setCode(503);
             $this->response->setMessage('Error: need MAIL command');
-            return $this->reply($clientId);
+            return false;
         }
 
-        if (!preg_match('/^to:[ ]*(.+)$/i', $data, $matches)) {
+        if (!$recipient) {
             $this->response->setCode(501);
             $this->response->setMessage('Syntax: RCPT TO:<address>');
-            return $this->reply($clientId);
+            return false;
         }
-
-        $address = $this->normalizeAddress($matches[1]);
-        if (!$address) {
-            $this->response->setCode(501);
-            $this->response->setMessage('Syntax: RCPT TO:<address>');
-            return $this->reply($clientId);
-        }
-
-        $this->context->addRecipient($address);
 
         $this->response->setCode(250);
         $this->response->setMessage('Ok');
 
-        $this->reply($clientId);
+        return true;
     }
 
     // }}}
@@ -279,18 +320,31 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      */
     protected function onData($clientId)
     {
+        if ($this->validateDataEvent()) {
+            $this->context->setDataState(true);
+        }
+
+        $this->reply($clientId);
+    }
+
+    // }}}
+    // {{{ validateDataEvent()
+
+    /**
+     * @return boolean
+     */
+    protected function validateDataEvent()
+    {
         if (!count($this->context->getRecipients())) {
             $this->response->setCode(503);
             $this->response->setMessage('Error: need RCPT command');
-            return $this->reply($clientId);
+            return false;
         }
-
-        $this->context->setDataState(true);
 
         $this->response->setCode(354);
         $this->response->setMessage('End data with <CR><LF>.<CR><LF>');
 
-        $this->reply($clientId);
+        return true;
     }
 
     // }}}
@@ -307,11 +361,25 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
             return;
         }
 
+        if ($this->processDataReceived()) {
+            $this->context->reset();
+        }
+
+        $this->reply($clientId);
+    }
+
+    // }}}
+    // {{{ processDataReceived()
+
+    /**
+     * @return boolean
+     */
+    protected function processDataReceived()
+    {
         $this->response->setCode(250);
         $this->response->setMessage('Ok');
 
-        $this->context->reset();
-        $this->reply($clientId);
+        return true;
     }
 
     // }}}
@@ -322,12 +390,25 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      */
     protected function onRset($clientId)
     {
-        $this->context->reset();
+        if ($this->validateReset()) {
+            $this->context->reset();
+        }
 
+        $this->reply($clientId);
+    }
+
+    // }}}
+    // {{{ validateReset()
+
+    /**
+     * @return boolean
+     */
+    protected function validateReset()
+    {
         $this->response->setCode(250);
         $this->response->setMessage('Ok');
 
-        $this->reply($clientId);
+        return true;
     }
 
     // }}}
