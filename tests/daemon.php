@@ -38,8 +38,12 @@
 require_once dirname(__FILE__) . '/prepare.php';
 
 $daemon = new Stagehand_SmtpDaemon('localhost', 9025);
-$daemon->setDebugMode(true);
-$daemon->useDebugCommand('debug');
+
+$handler = $daemon->getHandler();
+$handler->useDebugCommand('debug');
+
+$driver = $daemon->getDriver();
+$driver->setDebugMode(true);
 
 $daemon->start();
 

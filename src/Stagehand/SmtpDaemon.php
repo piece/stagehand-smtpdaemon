@@ -61,6 +61,8 @@ class Stagehand_SmtpDaemon
      * @access protected
      */
 
+    protected $driver;
+    protected $handler;
     protected $debugMode = false;
     protected $debugCommand;
 
@@ -87,6 +89,9 @@ class Stagehand_SmtpDaemon
     {
         $this->host = $host;
         $this->port = $port;
+
+        $this->handler = new Stagehand_SmtpDaemon_Handler();
+        $this->driver = new Stagehand_SmtpDaemon_Driver($this->host, $this->port);
     }
 
     // }}}
@@ -96,35 +101,52 @@ class Stagehand_SmtpDaemon
      */
     public function start()
     {
-        $handler = new Stagehand_SmtpDaemon_Handler();
-        $handler->useDebugCommand($this->debugCommand);
-
-        $driver = new Stagehand_SmtpDaemon_Driver($this->host, $this->port);
-        $driver->setDebugMode($this->debugMode);
-        $driver->setCallbackObject($handler);
-        $driver->start();
+        $this->driver->setCallbackObject($this->handler);
+        $this->driver->start();
     }
 
     // }}}
-    // {{{ setDebugMode()
+    // {{{ setDriver()
 
     /**
-     * @param boolean $mode
+     * @param object $driver
      */
-    public function setDebugMode($mode)
+    public function setDriver($driver)
     {
-        $this->debugMode = $mode;
+        $this->driver = $driver;
     }
 
     // }}}
-    // {{{ useDebugCommand()
+    // {{{ getDriver()
 
     /**
-     * @param string $command
+     * @return object
      */
-    public function useDebugCommand($command)
+    public function getDriver()
     {
-        $this->debugCommand = $command;
+        return $this->driver;
+    }
+
+    // }}}
+    // {{{ setHandler()
+
+    /**
+     * @param object $handler
+     */
+    public function setHandler($handler)
+    {
+        $this->handler = $handler;
+    }
+
+    // }}}
+    // {{{ getHandler()
+
+    /**
+     * @return object
+     */
+    public function getHandler()
+    {
+        return $this->handler;
     }
 
     /**#@-*/
