@@ -63,8 +63,6 @@ class Stagehand_SmtpDaemon
 
     protected $driver;
     protected $handler;
-    protected $debugMode = false;
-    protected $debugCommand;
 
     /**#@-*/
 
