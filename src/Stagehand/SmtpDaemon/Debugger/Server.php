@@ -35,10 +35,10 @@
  * @since      File available since Release 0.1.0
  */
 
-// {{{ Stagehand_PHP_SmtpDaemonTest
+// {{{ Stagehand_SmtpDaemon_Debugger_Server
 
 /**
- * Some tests for Stagehand_SmtpDaemon
+ * Stagehand_SmtpDaemon_Debugger_Server
  *
  * @package    Stagehand_SmtpDaemon
  * @copyright  2009 mbarracuda <mbarracuda@gmail.com>
@@ -46,7 +46,7 @@
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
+class Stagehand_SmtpDaemon_Debugger_Server
 {
 
     // {{{ properties
@@ -61,9 +61,8 @@ class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
      * @access protected
      */
 
-    protected $port;
-    protected $socket;
-    protected $connection;
+    protected $handler;
+    protected $command;
 
     /**#@-*/
 
@@ -77,53 +76,67 @@ class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
      * @access public
      */
 
-    public function setUp()
-    {
-        $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        socket_set_option($this->socket, SOL_SOCKET, SO_RCVTIMEO,
-                          array('sec' => 1, 'usec' => 0)
-                          );
+    // }}}
+    // {{{ __construct()
 
-        $this->debugger = new Stagehand_SmtpDaemon_Debugger_Client($this->socket,
-                                                                   'debug'
-                                                                   );
+    /**
+     * @param object $handler
+     * @param string $command
+     */
+    public function __construct($handler)
+    {
+        $this->handler = $handler;
     }
 
-    public function tearDown()
-    {
-        $this->disconnect();
-    }
+    // }}}
+    // {{{ isDebugCommand()
 
-    public function connect()
+    /**
+     * @param string $command
+     * @return boolean
+     */
+    public function isDebugCommand($command)
     {
-        $this->connection = @socket_connect($this->socket,
-                                            'localhost', $this->port
-                                            );
-    }
-
-    public function disconnect()
-    {
-        @socket_close($this->socket);
-    }
-
-    public function send($data)
-    {
-        return @socket_write($this->socket, $data, strlen($data));
-    }
-
-    public function getReply()
-    {
-        $result = null;
-        if (!@socket_recv($this->socket, $result, 2048, 0)) {
-            $this->fail('timeout');
+        if (!$command) {
+            return false;
         }
 
-        return $result;
+        return strtolower($this->command) === strtolower($command);
     }
 
-    public function debug()
+    // }}}
+    // {{{ setCommand()
+
+    /**
+     * @param string $command
+     */
+    public function setCommand($command)
     {
-        return $this->debugger->getContext();
+        $this->command = $command;
+    }
+
+    // }}}
+    // {{{ dumpContext()
+
+    /**
+     * @param integer $clientId
+     */
+    public function dumpContext($clientId)
+    {
+        $context = $this->handler->getContext();
+        $this->handler->_server->sendData($clientId, serialize($context));
+    }
+
+    // }}}
+    // {{{ dumpResponse()
+
+    /**
+     * @param integer $clientId
+     */
+    public function getResponse($clientId)
+    {
+        $response = $this->handler->getResponse();
+        $this->hanler->_server->sendData($clientId, serialize($reponse));
     }
 
     /**#@-*/

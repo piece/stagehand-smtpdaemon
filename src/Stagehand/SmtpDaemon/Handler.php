@@ -63,7 +63,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
 
     protected $context;
     protected $response;
-    protected $debugCommand = null;
+    protected $debugger;
 
     /**#@-*/
 
@@ -86,6 +86,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     {
         $this->context = new Stagehand_SmtpDaemon_Context();
         $this->response = new Stagehand_SmtpDaemon_Response();
+        $this->debugger = new Stagehand_SmtpDaemon_Debugger_Server($this);
     }
 
     // }}}
@@ -114,8 +115,9 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         $data = trim($data);
 
         if ($this->context->isDataState()) {
-            if ($this->isDebugCommand($data)) {
-                return $this->debug($clientId);
+            if ($this->debugger->isDebugCommand($data)) {
+                $this->debugger->dumpContext($clientId);
+                return;
             }
 
             $this->onDataReceived($clientId, $data);
@@ -150,14 +152,36 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
             $this->onQuit($clientId);
             break;
         default:
-            if ($this->isDebugCommand($command)) {
-                return $this->debug($clientId);
+            if ($this->debugger->isDebugCommand($command)) {
+                return $this->debugger->dumpContext($clientId);
             } else {
                 $this->response->setCode(502);
                 $this->response->setMessage('Error: command not recognized');
                 return $this->reply($clientId);
             }
         }
+    }
+
+    // }}}
+    // {{{ getContext()
+
+    /**
+     * @return object
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    // }}}
+    // {{{ getResponse()
+
+    /**
+     * @return object
+     */
+    public function getResponse()
+    {
+        return $this->response;
     }
 
     // }}}
@@ -168,11 +192,7 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
      */
     public function useDebugCommand($command)
     {
-        if ($command) {
-            $this->debugCommand = $command;
-        } else {
-            $this->debugCommand = null;
-        }
+        $this->debugger->setCommand($command);
     }
 
     /**#@-*/
@@ -491,33 +511,6 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
         }
 
         return $matches[1];
-    }
-
-    // }}}
-    // {{{ debug()
-
-    /**
-     * @param integer $clientId
-     */
-    protected function debug($clientId)
-    {
-        $this->_server->sendData($clientId, serialize($this->context));
-    }
-
-    // }}}
-    // {{{ isDebugCommand()
-
-    /**
-     * @param string $command
-     * @return boolean
-     */
-    protected function isDebugCommand($command)
-    {
-        if (!$this->debugCommand) {
-            return false;
-        }
-
-        return strtolower($this->debugCommand) === strtolower($command);
     }
 
     /**#@-*/

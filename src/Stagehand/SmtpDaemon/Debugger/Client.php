@@ -35,10 +35,10 @@
  * @since      File available since Release 0.1.0
  */
 
-// {{{ Stagehand_PHP_SmtpDaemonTest
+// {{{ Stagehand_SmtpDaemon_Debugger_Client
 
 /**
- * Some tests for Stagehand_SmtpDaemon
+ * Stagehand_SmtpDaemon_Debugger_Client
  *
  * @package    Stagehand_SmtpDaemon
  * @copyright  2009 mbarracuda <mbarracuda@gmail.com>
@@ -46,7 +46,7 @@
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
+class Stagehand_SmtpDaemon_Debugger_Client
 {
 
     // {{{ properties
@@ -61,10 +61,6 @@ class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
      * @access protected
      */
 
-    protected $port;
-    protected $socket;
-    protected $connection;
-
     /**#@-*/
 
     /**#@+
@@ -77,53 +73,63 @@ class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
      * @access public
      */
 
-    public function setUp()
-    {
-        $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        socket_set_option($this->socket, SOL_SOCKET, SO_RCVTIMEO,
-                          array('sec' => 1, 'usec' => 0)
-                          );
+    // }}}
+    // {{{ __construct()
 
-        $this->debugger = new Stagehand_SmtpDaemon_Debugger_Client($this->socket,
-                                                                   'debug'
-                                                                   );
+    /**
+     * @param resource $socket
+     * @param string $command
+     */
+    public function __construct($socket, $command = 'debug')
+    {
+        $this->socket = $socket;
+        $this->command = $command;
     }
 
-    public function tearDown()
+    // }}}
+    // {{{ setCommand()
+
+    /**
+     * @param string $command
+     */
+    public function setCommand($command)
     {
-        $this->disconnect();
+        $this->command = $command;
     }
 
-    public function connect()
+    // }}}
+    // {{{ getContext()
+
+    /**
+     * @return mixed
+     */
+    public function getContext()
     {
-        $this->connection = @socket_connect($this->socket,
-                                            'localhost', $this->port
-                                            );
+        $data = $this->command . "\r\n";
+
+        if (!socket_write($this->socket, $data, strlen($data))) {
+            return;
+        }
+
+        $reply = $this->getReplyData();
+        if (!$reply) {
+            return;
+        }
+
+        return unserialize($reply);
     }
 
-    public function disconnect()
-    {
-        @socket_close($this->socket);
-    }
-
-    public function send($data)
-    {
-        return @socket_write($this->socket, $data, strlen($data));
-    }
-
-    public function getReply()
+    public function getReplyData()
     {
         $result = null;
-        if (!@socket_recv($this->socket, $result, 2048, 0)) {
-            $this->fail('timeout');
+
+        $response = socket_recv($this->socket, $result, 4096, 0);
+        if ($response === false) {
+            $message = socket_strerror(socket_last_error());
+            throw new Stagehand_SmtpDaemon_Debugger_Exception($message);
         }
 
         return $result;
-    }
-
-    public function debug()
-    {
-        return $this->debugger->getContext();
     }
 
     /**#@-*/

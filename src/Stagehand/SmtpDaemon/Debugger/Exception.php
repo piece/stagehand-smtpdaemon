@@ -35,10 +35,10 @@
  * @since      File available since Release 0.1.0
  */
 
-// {{{ Stagehand_PHP_SmtpDaemonTest
+// {{{ Stagehand_SmtpDaemon_Debuuger_Exception
 
 /**
- * Some tests for Stagehand_SmtpDaemon
+ * The debugger exception class for Stagehand_SmtpDaemon.
  *
  * @package    Stagehand_SmtpDaemon
  * @copyright  2009 mbarracuda <mbarracuda@gmail.com>
@@ -46,102 +46,7 @@
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
-{
-
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access protected
-     */
-
-    protected $port;
-    protected $socket;
-    protected $connection;
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    public function setUp()
-    {
-        $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        socket_set_option($this->socket, SOL_SOCKET, SO_RCVTIMEO,
-                          array('sec' => 1, 'usec' => 0)
-                          );
-
-        $this->debugger = new Stagehand_SmtpDaemon_Debugger_Client($this->socket,
-                                                                   'debug'
-                                                                   );
-    }
-
-    public function tearDown()
-    {
-        $this->disconnect();
-    }
-
-    public function connect()
-    {
-        $this->connection = @socket_connect($this->socket,
-                                            'localhost', $this->port
-                                            );
-    }
-
-    public function disconnect()
-    {
-        @socket_close($this->socket);
-    }
-
-    public function send($data)
-    {
-        return @socket_write($this->socket, $data, strlen($data));
-    }
-
-    public function getReply()
-    {
-        $result = null;
-        if (!@socket_recv($this->socket, $result, 2048, 0)) {
-            $this->fail('timeout');
-        }
-
-        return $result;
-    }
-
-    public function debug()
-    {
-        return $this->debugger->getContext();
-    }
-
-    /**#@-*/
-
-    /**#@+
-     * @access protected
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    // }}}
-}
+class Stagehand_SmtpDaemon_Debugger_Exception extends Exception {}
 
 // }}}
 
