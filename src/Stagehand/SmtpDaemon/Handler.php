@@ -170,6 +170,8 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     {
         if ($command) {
             $this->debugCommand = $command;
+        } else {
+            $this->debugCommand = null;
         }
     }
 
