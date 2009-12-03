@@ -121,11 +121,6 @@ class Stagehand_SmtpDaemonTest extends PHPUnit_Framework_TestCase
         return $result;
     }
 
-    public function debug()
-    {
-        return $this->debugger->getContext();
-    }
-
     /**#@-*/
 
     /**#@+

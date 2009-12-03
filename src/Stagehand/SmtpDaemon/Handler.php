@@ -114,12 +114,11 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
     {
         $data = trim($data);
 
-        if ($this->context->isDataState()) {
-            if ($this->debugger->isDebugCommand($data)) {
-                $this->debugger->dumpContext($clientId);
-                return;
-            }
+        if ($this->debugger->isDebugCommand($data)) {
+            return $this->debugger->debug($clientId, $data);
+        }
 
+        if ($this->context->isDataState()) {
             $this->onDataReceived($clientId, $data);
             return;
         }
@@ -152,13 +151,9 @@ class Stagehand_SmtpDaemon_Handler extends Net_Server_Handler
             $this->onQuit($clientId);
             break;
         default:
-            if ($this->debugger->isDebugCommand($command)) {
-                return $this->debugger->dumpContext($clientId);
-            } else {
-                $this->response->setCode(502);
-                $this->response->setMessage('Error: command not recognized');
-                return $this->reply($clientId);
-            }
+            $this->response->setCode(502);
+            $this->response->setMessage('Error: command not recognized');
+            return $this->reply($clientId);
         }
     }
 

@@ -126,7 +126,7 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
         $this->send("MAIL from:<foo@example.com>\r\n");
         $this->assertEquals($this->getReply(), "250 Ok\r\n");
 
-        $context = $this->debug();
+        $context = $this->debugger->getContext();
 
         $this->assertEquals($context->getSender(), 'foo@example.com');
 
@@ -164,7 +164,7 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
         $this->send("RCPT to:<bar@example.com>\r\n");
         $this->assertEquals($this->getReply(), "250 Ok\r\n");
 
-        $context = $this->debug();
+        $context = $this->debugger->getContext();
         $recipients = $context->getRecipients();
 
         $this->assertEquals(count($recipients), 1);
@@ -173,7 +173,7 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
         $this->send("RCPT to:<baz@example.com>\r\n");
         $this->assertEquals($this->getReply(), "250 Ok\r\n");
 
-        $context = $this->debug();
+        $context = $this->debugger->getContext();
         $recipients = $context->getRecipients();
 
         $this->assertEquals(count($recipients), 2);
@@ -192,7 +192,7 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
 
         $this->send("DATA\r\n");
         $this->assertEquals($this->getReply(), "503 Error: need RCPT command\r\n");
-        $context = $this->debug();
+        $context = $this->debugger->getContext();
         $this->assertFalse($context->isDataState());
 
         $this->send("MAIL from:foo@example.com\r\n");
@@ -200,7 +200,7 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
 
         $this->send("DATA\r\n");
         $this->assertEquals($this->getReply(), "503 Error: need RCPT command\r\n");
-        $context = $this->debug();
+        $context = $this->debugger->getContext();
         $this->assertFalse($context->isDataState());
 
         $this->send("RCPT to:baz@example.com\r\n");
@@ -208,7 +208,7 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
 
         $this->send("DATA\r\n");
         $this->assertEquals($this->getReply(), "354 End data with <CR><LF>.<CR><LF>\r\n");
-        $context = $this->debug();
+        $context = $this->debugger->getContext();
         $this->assertTrue($context->isDataState());
     }
 
@@ -236,7 +236,7 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
 
         $this->assertEquals($this->getReply(), "250 Ok\r\n");
 
-        $context = $this->debug();
+        $context = $this->debugger->getContext();
 
         $this->assertNull($context->getSender());
         $this->assertEquals(count($context->getRecipients()), 0);
@@ -254,7 +254,7 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
         $this->send("RSET\r\n");
         $this->assertEquals($this->getReply(), "250 Ok\r\n");
 
-        $context = $this->debug();
+        $context = $this->debugger->getContext();
 
         $this->assertNull($context->getSender());
         $this->assertEquals(count($context->getRecipients()), 0);
@@ -265,7 +265,7 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
         $this->send("RCPT to:bar@example.com\r\n");
         $this->getReply();
 
-        $context = $this->debug();
+        $context = $this->debugger->getContext();
 
         $this->assertEquals($context->getSender(), 'foo@example.com');
         $this->assertEquals(count($context->getRecipients()), 1);
@@ -273,7 +273,7 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
         $this->send("RSET\r\n");
         $this->assertEquals($this->getReply(), "250 Ok\r\n");
 
-        $context = $this->debug();
+        $context = $this->debugger->getContext();
 
         $this->assertNull($context->getSender());
         $this->assertEquals(count($context->getRecipients()), 0);
@@ -301,7 +301,7 @@ class Stagehand_SmtpDaemon_HandlerTest extends Stagehand_SmtpDaemonTest
         $this->assertTrue($this->connection);
         $this->getReply();
 
-        $context = $this->debug();
+        $context = $this->debugger->getContext();
 
         $this->send("QUIT\r\n");
         $this->assertEquals($this->getReply(), "220 Bye\r\n");

@@ -97,11 +97,26 @@ class Stagehand_SmtpDaemon_Debugger_Server
      */
     public function isDebugCommand($command)
     {
-        if (!$command) {
+        if (!$command || !$this->command) {
             return false;
         }
 
-        return strtolower($this->command) === strtolower($command);
+        $parts = explode(' ', strtolower($command));
+        if (count($parts) < 2) {
+            return false;
+        }
+
+        if (strtolower($this->command) !== $parts[0]) {
+            return false;
+        }
+
+        if ($parts[1] !== 'context'
+            && $parts[1] !== 'response'
+            ) {
+            return false;
+        }
+
+        return true;
     }
 
     // }}}
@@ -113,6 +128,29 @@ class Stagehand_SmtpDaemon_Debugger_Server
     public function setCommand($command)
     {
         $this->command = $command;
+    }
+
+    // }}}
+    // {{{ debug()
+
+    /**
+     * @param integer $clientId
+     * @param string $command
+     */
+    public function debug($clientId, $command)
+    {
+        $parts = explode(' ', strtolower($command));
+
+        switch ($parts[1]) {
+        case 'context':
+            $this->dumpContext($clientId);
+            break;
+        case 'response':
+            $this->dumpResponse($clientId);
+            break;
+        default:
+            break;
+        }
     }
 
     // }}}
@@ -133,10 +171,10 @@ class Stagehand_SmtpDaemon_Debugger_Server
     /**
      * @param integer $clientId
      */
-    public function getResponse($clientId)
+    public function dumpResponse($clientId)
     {
         $response = $this->handler->getResponse();
-        $this->hanler->_server->sendData($clientId, serialize($reponse));
+        $this->handler->_server->sendData($clientId, serialize($response));
     }
 
     /**#@-*/

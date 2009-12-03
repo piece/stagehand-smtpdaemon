@@ -105,25 +105,33 @@ class Stagehand_SmtpDaemon_Debugger_Client
      */
     public function getContext()
     {
-        $data = $this->command . "\r\n";
+        $command = $this->command . " context\r\n";
 
-        if (!socket_write($this->socket, $data, strlen($data))) {
-            return;
-        }
-
-        $reply = $this->getReplyData();
-        if (!$reply) {
-            return;
-        }
-
-        return unserialize($reply);
+        return unserialize($this->getDebugData($command));
     }
 
-    public function getReplyData()
-    {
-        $result = null;
+    // }}}
+    // {{{ getResponse()
 
+    /**
+     * @return mixed
+     */
+    public function getResponse()
+    {
+        $command = $this->command . " response\r\n";
+
+        return unserialize($this->getDebugData($command));
+    }
+
+    public function getDebugData($command)
+    {
+        if (!socket_write($this->socket, $command, strlen($command))) {
+            return;
+        }
+
+        $result = null;
         $response = socket_recv($this->socket, $result, 4096, 0);
+
         if ($response === false) {
             $message = socket_strerror(socket_last_error());
             throw new Stagehand_SmtpDaemon_Debugger_Exception($message);
